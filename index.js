@@ -12,9 +12,10 @@ function gendata(count){
 const count = 12;
 var dataset = gendata(count);
 const w = 20;
-const hs = 5;
+const height = 303;
+const minH = 30
 var scaleToSaturation = d3.scaleLinear().domain([d3.min(dataset), d3.max(dataset)]).range([0, 100]);
-var height = d3.max(dataset) * hs;
+var scaleToHeight = d3.scaleLinear().domain([d3.min(dataset), d3.max(dataset)]).range([minH, height - 3])
 
 var svg = d3.select('#app').
     append('svg').
@@ -31,10 +32,10 @@ svg.selectAll('rect').
         return i * (w + 1) + 1;
     }).
     attr('y', (d) => {
-        return height - d * hs;
+        return height - scaleToHeight(d);
     }).
     attr('width', w).
-    attr('height', d=>{ return d * hs;}).
+    attr('height', d=>{ return scaleToHeight(d);}).
     attr('fill', d=> {
         val = scaleToSaturation(d);
         return `hsl(180, ${Math.floor(val)}%, 60%)`;
@@ -48,7 +49,7 @@ svg.selectAll('text').
         return i * (w + 1) + 1;
     }).
     attr('y', (d) => {
-        return height - d * hs + 12;
+        return height - scaleToHeight(d) + 12;
     }).
     text(d=> {return d;}).
     attr('font-size', '15px').
