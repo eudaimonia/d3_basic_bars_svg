@@ -10,48 +10,69 @@ function gendata(count){
 }
 
 const count = 12;
-var dataset = gendata(count);
 const w = 20;
 const height = 303;
 const minH = 30
-var scaleToSaturation = d3.scaleLinear().domain([d3.min(dataset), d3.max(dataset)]).range([0, 100]);
-var scaleToHeight = d3.scaleLinear().domain([d3.min(dataset), d3.max(dataset)]).range([minH, height - 3])
 
-var svg = d3.select('#app').
+function DataSetProxy(){
+    this.dataset = gendata(count);
+    this.scaleToSaturation = d3.scaleLinear().
+        domain([d3.min(this.dataset), d3.max(this.dataset)]).
+        range([0, 100]);
+    this.scaleToHeight = d3.scaleLinear().
+        domain([d3.min(this.dataset), d3.max(this.dataset)]).
+        range([minH, height - 3]);
+}
+
+var svg = d3.select('#data-chart').
     append('svg').
     attr('width', count * (w+1)).
     attr('height', height).
     style('border-bottom', 'solid red 1px').
     style('border-top', 'dotted lightblue 1px');
 
-svg.selectAll('rect').
-    data(dataset).
-    enter().
-    append('rect').
-    attr('x', (d, i) => {
-        return i * (w + 1) + 1;
-    }).
-    attr('y', (d) => {
-        return height - scaleToHeight(d);
-    }).
-    attr('width', w).
-    attr('height', d=>{ return scaleToHeight(d);}).
-    attr('fill', d=> {
-        val = scaleToSaturation(d);
-        return `hsl(180, ${Math.floor(val)}%, 60%)`;
-    });
+function updateRect(datasetProxy) {
+    svg.selectAll('rect').
+        data(datasetProxy.dataset).
+        enter().
+        append('rect').
+        attr('x', (d, i) => {
+            return i * (w + 1) + 1;
+        }).
+        attr('y', (d) => {
+            return height - datasetProxy.scaleToHeight(d);
+        }).
+        attr('width', w).
+        attr('height', d=>{ return datasetProxy.scaleToHeight(d);}).
+        attr('fill', d=> {
+            val = datasetProxy.scaleToSaturation(d);
+            return `hsl(180, ${Math.floor(val)}%, 60%)`;
+        });
+}
 
-svg.selectAll('text').
-    data(dataset).
-    enter().
-    append('text').
-    attr('x', (d, i) => {
-        return i * (w + 1) + 1;
-    }).
-    attr('y', (d) => {
-        return height - scaleToHeight(d) + 12;
-    }).
-    text(d=> {return d;}).
-    attr('font-size', '15px').
-    attr('fill', 'blue');
+function updateText(datasetProxy) {
+    svg.selectAll('text').
+        data(datasetProxy.dataset).
+        enter().
+        append('text').
+        attr('x', (d, i) => {
+            return i * (w + 1) + 1;
+        }).
+        attr('y', (d) => {
+            return height - datasetProxy.scaleToHeight(d) + 12;
+        }).
+        text(d=> {return d;}).
+        attr('font-size', '15px').
+        attr('fill', 'blue');
+}
 
+var datasetProxy = new DataSetProxy();
+updateRect(datasetProxy);
+updateText(datasetProxy);
+
+var btn = document.querySelector('button');
+btn.onclick = function() {
+    confirm('hello');
+    var datasetProxy = new DataSetProxy();
+    updateText(datasetProxy);
+}
