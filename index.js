@@ -31,12 +31,8 @@ var svg = d3.select('#data-chart').
     style('border-bottom', 'solid red 1px').
     style('border-top', 'dotted lightblue 1px');
 
-function updateRect(datasetProxy) {
-    svg.selectAll('rect').
-        data(datasetProxy.dataset).
-        enter().
-        append('rect').
-        attr('x', (d, i) => {
+function updateRect(svgRects, datasetProxy) {
+        svgRects.attr('x', (d, i) => {
             return i * (w + 1) + 1;
         }).
         attr('y', (d) => {
@@ -50,12 +46,8 @@ function updateRect(datasetProxy) {
         });
 }
 
-function updateText(datasetProxy) {
-    svg.selectAll('text').
-        data(datasetProxy.dataset).
-        enter().
-        append('text').
-        attr('x', (d, i) => {
+function updateText(svgTexes, datasetProxy) {
+        svgTexes.attr('x', (d, i) => {
             return i * (w + 1) + 1;
         }).
         attr('y', (d) => {
@@ -67,12 +59,29 @@ function updateText(datasetProxy) {
 }
 
 var datasetProxy = new DataSetProxy();
-updateRect(datasetProxy);
-updateText(datasetProxy);
+
+var svgRects = svg.selectAll('rect').
+    data(datasetProxy.dataset).
+    enter().
+    append('rect');
+
+var svgTexes = svg.selectAll('text').
+        data(datasetProxy.dataset).
+        enter().
+        append('text');
+
+updateRect(svgRects, datasetProxy);
+updateText(svgTexes, datasetProxy);
 
 var btn = document.querySelector('button');
 btn.onclick = function() {
-    confirm('hello');
     var datasetProxy = new DataSetProxy();
-    updateText(datasetProxy);
+
+    var svgRects = svg.selectAll('rect').
+        data(datasetProxy.dataset);
+
+    var svgTexes = svg.selectAll('text').
+            data(datasetProxy.dataset);
+    updateRect(svgRects, datasetProxy);
+    updateText(svgTexes, datasetProxy);
 }
