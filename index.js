@@ -77,11 +77,23 @@ var btn = document.querySelector('button');
 btn.onclick = function() {
     var datasetProxy = new DataSetProxy();
 
-    var svgRects = svg.selectAll('rect').
-        data(datasetProxy.dataset);
-
     var svgTexes = svg.selectAll('text').
             data(datasetProxy.dataset);
+
+    var svgRects = svg.selectAll('rect').
+        data(datasetProxy.dataset).
+        transition().
+        duration(1000).
+        on('start', ()=> {
+            svgTexes.text('').
+                attr('opactiy', 0); // It does not work
+        }).
+        on('end', ()=> {
+            updateText(svgTexes, datasetProxy);
+            svgTexes.transition().
+                duration(1000).
+                attr('opactiy', 1); // Does not work ...
+        });
+
     updateRect(svgRects, datasetProxy);
-    updateText(svgTexes, datasetProxy);
 }
